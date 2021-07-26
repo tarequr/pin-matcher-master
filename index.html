@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pin Generator</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="pin-generator half-width">
+                    <input class="form-control" type="text" id="random-value">
+                    <button class="generate-btn" id="generate-btn">Generate Pin</button>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="input-section half-width">
+                    <input class="form-control" type="text" id="output-value">
+                    <div class="numbers">
+                        <div class="calc-body">
+                            <div class="calc-button-row">
+                              <div class="button number" id="7">7</div>
+                              <div class="button number" id="8">8</div>
+                              <div class="button number" id="9">9</div>
+                            </div>
+                            <div class="calc-button-row">
+                              <div class="button number" id="4">4</div>
+                              <div class="button number" id="5">5</div>
+                              <div class="button number" id="6">6</div>
+                            </div>
+                            <div class="calc-button-row">
+                              <div class="button number" id="1">1</div>
+                              <div class="button number" id="2">2</div>
+                              <div class="button number" id="3">3</div>
+                            </div>
+                            <div class="calc-button-row">
+                                <div class="button operator" id="backspace"><</div>
+                                <div class="button number" id="0">0</div>
+                                <div class="button operator" id="clear">C</div>
+                            </div>
+                            <div>
+                                <button type="submit" class="submit-btn" id="submit-btn">Submit</button>
+                                <p class="action-left"><span id="try-number">3</span> try left</p>
+                            </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="notify-section">
+            <p class="notify" id="error">❌ Pin Didn't Match, Please try again</p>
+            <p class="notify" id="success">✅ Pin Matched... Secret door is opening for you</p>
+        </div>
+    </div>
+
+    <script>
+        function getOutput() {
+            return document.getElementById('output-value').value;
+        }
+
+        function getRandom() {
+            return document.getElementById('random-value').value;
+        }
+
+        function printOutput(num) {
+            document.getElementById('output-value').value = num;
+        }
+
+        function printRandom(num) {
+            document.getElementById('random-value').value = num;
+        }
+
+        //number section
+        let history;
+        let number = document.getElementsByClassName('number');
+        for (let i = 0; i < number.length; i++) {
+            let allNumber = number[i];
+            allNumber.addEventListener('click', function(){
+                history = getOutput();
+                if(history != NaN){
+                    historyValue = history + this.id;
+                    printOutput(historyValue);
+                }
+            })
+            
+        }
+
+        //operator section
+        let operator = document.getElementsByClassName('operator');
+        for(let i = 0; i<operator.length; i++){
+            let allOperator = operator[i];
+            allOperator.addEventListener('click',function(){
+                if(this.id == "clear"){
+                    printOutput("");
+                }
+                else if(this.id == "backspace"){
+                    let output = getOutput().toString();
+                    if(output){
+                        output = output.substr(0, output.length-1);
+                        printOutput(output);
+                    }
+                }
+                
+            });
+        }
+
+        //random button
+        const generateBtn = document.getElementById("generate-btn");
+        generateBtn.addEventListener('click', function(){
+            var randomValue = Math.random()*10000;
+            var randomResult = Math.round(randomValue);
+
+            if (randomResult >= 1000 && randomResult <= 9999) {
+                printRandom(randomResult);
+            }
+        })
+
+        const submitBtn = document.getElementById("submit-btn");
+        submitBtn.addEventListener('click', function(){
+            randomNum = getRandom()
+            outputNum = getOutput();
+
+            if (randomNum == outputNum && outputNum != '') {
+                let success = document.getElementById('success')
+                success.style.display = 'block'
+                error.style.display   = 'none'
+
+                printRandom('');
+                printOutput('');
+                document.getElementById('try-number').innerText = 3;
+            }else{
+                let error = document.getElementById('error')
+                error.style.display   = 'block'
+                success.style.display = 'none'
+
+                let tryCount = document.getElementById('try-number').innerText;
+                for (let i = 0; i < tryCount.length; i++) {
+                    const tryCatch = tryCount - 1;
+                    document.getElementById('try-number').innerText = tryCatch;
+
+                    if (tryCatch == 0) {
+                        let submitButton = document.getElementById('submit-btn');
+
+                        submitButton.disabled = true;
+                        submitButton.style.backgroundColor = 'red';
+                    }
+                }
+            }
+        })
+        
+    </script>
+</body>
+</html>
